@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">StarlingSaver</string>
+    <string name="transactions">Transactions</string>
+    <string name="error">Unknown error</string>
+    <string name="welcome_aidan_lee">Welcome, Aidan Lee</string>
+    <string name="a_list_of_your_recent_transactions">A list of your recent transactions</string>
+    <string name="round_up_total">Round up total</string>
+    <string name="round_up">Round up</string>
+</resources>
