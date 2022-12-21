@@ -2,11 +2,14 @@ package com.starling.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.starling.core.CodeException
 import com.starling.domain.useCases.GetAccountsUseCase
 import com.starling.network.entities.Account
 import com.starling.presentation.PresentationError
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import src.starling.R
 
@@ -14,8 +17,8 @@ class HomeViewModel(private val accountUseCase: GetAccountsUseCase) : ViewModel(
 
     // This would be a part of the parent BaseActivity we would create.
     // We would have a state OBSERVER instead of a flow.
-    private val _homeState = MutableSharedFlow<HomeState>()
-    val homeState = _homeState.asSharedFlow()
+    private val _homeState = MutableStateFlow<HomeState>(HomeState.Loading)
+    val homeState = _homeState.asStateFlow()
 
     private val _accountSelected = MutableSharedFlow<Pair<String, String>>()
     val accountSelected = _accountSelected.asSharedFlow()
@@ -23,12 +26,7 @@ class HomeViewModel(private val accountUseCase: GetAccountsUseCase) : ViewModel(
     private val _failure = MutableSharedFlow<PresentationError>()
     val failure = _failure.asSharedFlow()
 
-    init {
-        viewModelScope.launch {
-            getAccounts()
-            _homeState.emit(HomeState.Loading)
-        }
-    }
+    init { getAccounts() }
 
     private fun accountSelected(uid: String, defaultCategory: String) = viewModelScope.launch { _accountSelected.emit(
         Pair(uid, defaultCategory)
@@ -44,7 +42,15 @@ class HomeViewModel(private val accountUseCase: GetAccountsUseCase) : ViewModel(
                         emitFailure(null)
                     }
                 },
-                onFailure = { emitFailure(it.message) }
+                onFailure = {
+                    // This text is just here to help with the token issue.
+                    val message = if(it is CodeException && it.getCode() == 403) {
+                        "Please update the authorisation token"
+                    } else {
+                        it.message
+                    }
+                    emitFailure(message)
+                }
             )
         }
     }
@@ -71,8 +77,8 @@ class HomeViewModel(private val accountUseCase: GetAccountsUseCase) : ViewModel(
 
     }
 
-    private fun emitAccounts(accounts: List<AccountListItem>) = viewModelScope.launch {
-        _homeState.emit(HomeState.Reading(accounts))
+    private fun emitAccounts(accounts: List<AccountListItem>) {
+        _homeState.value = HomeState.Reading(accounts)
     }
 
     sealed class HomeState {

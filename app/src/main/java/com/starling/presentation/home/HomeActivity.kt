@@ -3,6 +3,7 @@ package com.starling.presentation.home
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.starling.presentation.PresentationError
 import com.starling.presentation.transactions.TransactionsActivity
@@ -44,6 +45,7 @@ class HomeActivity : AppCompatActivity() {
 
         lifecycleScope.launchWhenStarted {
             viewModel.failure.collectLatest {
+                binding.loadingPanel.isVisible = false
                 val error = when(it) {
                     is PresentationError.IntError -> getString(it.error)
                     is PresentationError.StringError -> it.error
@@ -55,9 +57,9 @@ class HomeActivity : AppCompatActivity() {
         lifecycleScope.launchWhenStarted {
             viewModel.homeState.collectLatest {
                 when(it) {
-                    HomeViewModel.HomeState.Loading -> binding.loadingProgress.show()
+                    HomeViewModel.HomeState.Loading -> binding.loadingPanel.isVisible = true
                     is HomeViewModel.HomeState.Reading -> {
-                        binding.loadingProgress.hide()
+                        binding.loadingPanel.isVisible = false
                         adapter.updateItems(it.accounts)
                     }
                 }

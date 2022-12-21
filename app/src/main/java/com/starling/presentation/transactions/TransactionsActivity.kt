@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.starling.core.formatPound
 import com.starling.core.penniesToRoundUp
@@ -76,6 +77,7 @@ class TransactionsActivity : AppCompatActivity() {
 
         lifecycleScope.launchWhenStarted {
             viewModel.failure.collectLatest {
+                binding.loadingPanel.isVisible = false
                 val error = when (it) {
                     is PresentationError.IntError -> getString(it.error)
                     is PresentationError.StringError -> it.error
@@ -85,11 +87,11 @@ class TransactionsActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launchWhenStarted {
-            viewModel.homeState.collectLatest {
+            viewModel.transactionState.collectLatest {
                 when (it) {
-                    TransactionsViewModel.TransactionsState.Loading -> binding.progress.show()
+                    TransactionsViewModel.TransactionsState.Loading -> binding.loadingPanel.isVisible = true
                     is TransactionsViewModel.TransactionsState.Reading -> {
-                        binding.progress.hide()
+                        binding.loadingPanel.isVisible = false
                         adapter.updateItems(it.transactions)
                         setTotal(it.transactions)
                     }

@@ -5,6 +5,7 @@
 Username: adlee116@mail.com 
 Password: Qwerty123!
 Please update the token using the variable 'sessionsToken' in the TokenInterceptor class. This was done to bypass the need for the auth implementation
+2. Please ensure you run in debug, as it will allow you to see chuck. Giving you a view of all requests. 
 
 ## Architecture
 Language: Kotlin

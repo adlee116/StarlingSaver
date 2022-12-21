@@ -47,9 +47,9 @@ internal class TransactionsViewModelTest {
             )
             val list = mutableListOf(transaction)
             getTransactionsUseCase.mockSuccess(list)
-
+            viewModel.process(TransactionsViewModel.TransactionsEvent.Initialise("", "", "", ""))
             val launch = launch {
-                viewModel.homeState.collect {
+                viewModel.transactionState.collect {
                     assert(it is TransactionsViewModel.TransactionsState.Reading)
                     val newTransaction = (it as TransactionsViewModel.TransactionsState.Reading).transactions[0]
                     assert(newTransaction.name == transaction.counterPartyName)
@@ -57,7 +57,6 @@ internal class TransactionsViewModelTest {
                     assert(newTransaction.amount == transaction.amount.minorUnits)
                 }
             }
-            viewModel.process(TransactionsViewModel.TransactionsEvent.Initialise("", "", "", ""))
             launch.start()
             launch.cancel()
         }
@@ -74,15 +73,14 @@ internal class TransactionsViewModelTest {
             )
             val list = mutableListOf(transaction)
             getTransactionsUseCase.mockSuccess(list)
-
+            viewModel.process(TransactionsViewModel.TransactionsEvent.Initialise("", "", "", ""))
             val launch = launch {
-                viewModel.homeState.collect {
+                viewModel.transactionState.collect {
                     assert(it is TransactionsViewModel.TransactionsState.Reading)
                     val newTransactionList = (it as TransactionsViewModel.TransactionsState.Reading).transactions
                     assert(newTransactionList.isEmpty())
                 }
             }
-            viewModel.process(TransactionsViewModel.TransactionsEvent.Initialise("", "", "", ""))
             launch.start()
             launch.cancel()
         }
@@ -98,15 +96,14 @@ internal class TransactionsViewModelTest {
             )
             val list = mutableListOf(transaction)
             getTransactionsUseCase.mockSuccess(list)
-
+            viewModel.process(TransactionsViewModel.TransactionsEvent.Initialise("", "", "", ""))
             val launch = launch {
-                viewModel.homeState.collect {
+                viewModel.transactionState.collect {
                     assert(it is TransactionsViewModel.TransactionsState.Reading)
                     val newTransactionList = (it as TransactionsViewModel.TransactionsState.Reading).transactions
                     assert(newTransactionList.isEmpty())
                 }
             }
-            viewModel.process(TransactionsViewModel.TransactionsEvent.Initialise("", "", "", ""))
             launch.start()
             launch.cancel()
         }

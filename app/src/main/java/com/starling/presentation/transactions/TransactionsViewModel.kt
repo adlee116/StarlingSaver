@@ -13,6 +13,7 @@ import com.starling.network.requests.CurrencyAndAmount
 import com.starling.network.requests.TopUpRequest
 import com.starling.presentation.PresentationError
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import src.starling.R
@@ -28,8 +29,8 @@ class TransactionsViewModel(
 
     // This would be a part of the parent BaseActivity we would create.
     // We would have a state OBSERVER instead of a flow.
-    private val _homeState = MutableSharedFlow<TransactionsState>()
-    val homeState = _homeState.asSharedFlow()
+    private val _transactionState = MutableStateFlow<TransactionsState>(TransactionsState.Loading)
+    val transactionState = _transactionState.asSharedFlow()
 
     private val _failure = MutableSharedFlow<PresentationError>()
     val failure = _failure.asSharedFlow()
@@ -161,8 +162,8 @@ class TransactionsViewModel(
         _savingsAdded.emit(Unit)
     }
 
-    private fun emitTransactions(accounts: List<TransactionsListItem>) = viewModelScope.launch {
-        _homeState.emit(TransactionsState.Reading(accounts))
+    private fun emitTransactions(accounts: List<TransactionsListItem>) {
+        _transactionState.value = TransactionsState.Reading(accounts)
     }
 
     sealed class TransactionsState {
